@@ -193,12 +193,12 @@
   cursor: pointer;
 }
 .PlaygroundEditorTheme__tableAddColumns:after {
-  background-image: url(../images/icons/plus.svg);
+  background-image: url(/icons/plus.svg);
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: block;
-  content: ' ';
+  content: " ";
   position: absolute;
   top: 0;
   left: 0;
@@ -221,12 +221,12 @@
   cursor: pointer;
 }
 .PlaygroundEditorTheme__tableAddRows:after {
-  background-image: url(../images/icons/plus.svg);
+  background-image: url(/icons/plus.svg);
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: block;
-  content: ' ';
+  content: " ";
   position: absolute;
   top: 0;
   left: 0;
@@ -331,7 +331,7 @@
 }
 .PlaygroundEditorTheme__listItemUnchecked:before,
 .PlaygroundEditorTheme__listItemChecked:before {
-  content: '';
+  content: "";
   width: 16px;
   height: 16px;
   top: 2px;
@@ -341,8 +341,8 @@
   background-size: cover;
   position: absolute;
 }
-.PlaygroundEditorTheme__listItemUnchecked[dir='rtl']:before,
-.PlaygroundEditorTheme__listItemChecked[dir='rtl']:before {
+.PlaygroundEditorTheme__listItemUnchecked[dir="rtl"]:before,
+.PlaygroundEditorTheme__listItemChecked[dir="rtl"]:before {
   left: auto;
   right: 0;
 }
@@ -362,7 +362,7 @@
   background-repeat: no-repeat;
 }
 .PlaygroundEditorTheme__listItemChecked:after {
-  content: '';
+  content: "";
   cursor: pointer;
   border-color: #fff;
   border-style: solid;

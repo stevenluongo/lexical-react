@@ -1,6 +1,6 @@
 /* @import url('assets/styles/variables.css'); */
 
-[type='page-break'] {
+[type="page-break"] {
   position: relative;
   display: block;
   width: calc(100% + var(--editor-input-padding, 28px) * 2);
@@ -15,8 +15,8 @@
   background-color: var(--editor-color-secondary, #eeeeee);
 }
 
-[type='page-break']::before {
-  content: '';
+[type="page-break"]::before {
+  content: "";
 
   position: absolute;
   top: 50%;
@@ -25,12 +25,12 @@
   opacity: 0.5;
 
   background-size: cover;
-  background-image: url(/src/images/icons/scissors.svg);
+  background-image: url(/icons/scissors.svg);
   width: 16px;
   height: 16px;
 }
 
-[type='page-break']::after {
+[type="page-break"]::after {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -41,16 +41,16 @@
   border: 1px solid #ccc;
   background-color: #fff;
 
-  content: 'PAGE BREAK';
+  content: "PAGE BREAK";
   font-size: 12px;
   color: #000;
   font-weight: 600;
 }
 
-.selected[type='page-break'] {
+.selected[type="page-break"] {
   border-color: var(--editor-color-primary, #4766cb);
 }
 
-.selected[type='page-break']::before {
+.selected[type="page-break"]::before {
   opacity: 1;
 }
