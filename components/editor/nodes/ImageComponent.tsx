@@ -7,12 +7,10 @@
  */
 
 import type {
-  GridSelection,
+  BaseSelection,
   LexicalCommand,
   LexicalEditor,
   NodeKey,
-  NodeSelection,
-  RangeSelection,
 } from "lexical";
 
 import "./ImageNode.css";
@@ -47,6 +45,7 @@ import {
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
+import { createWebsocketProvider } from "@/components/editor/lib/collaboration";
 import { useSettings } from "../context/SettingsContext";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import EmojisPlugin from "../plugins/EmojisPlugin";
@@ -141,9 +140,7 @@ export default function ImageComponent({
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const { isCollabActive } = useCollaborationContext();
   const [editor] = useLexicalComposerContext();
-  const [selection, setSelection] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+  const [selection, setSelection] = useState<BaseSelection | null>(null);
   const activeEditorRef = useRef<LexicalEditor | null>(null);
 
   const onDelete = useCallback(
@@ -259,9 +256,7 @@ export default function ImageComponent({
     const unregister = mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         if (isMounted) {
-          setSelection(
-            editorState.read(() => $getSelection()) as NodeSelection
-          );
+          setSelection(editorState.read(() => $getSelection()));
         }
       }),
       editor.registerCommand(
@@ -394,7 +389,15 @@ export default function ImageComponent({
               <EmojisPlugin />
               <HashtagPlugin />
               <KeywordsPlugin />
-              <HistoryPlugin externalHistoryState={historyState} />
+              {isCollabActive ? (
+                <CollaborationPlugin
+                  id={caption.getKey()}
+                  providerFactory={createWebsocketProvider}
+                  shouldBootstrap={true}
+                />
+              ) : (
+                <HistoryPlugin externalHistoryState={historyState} />
+              )}
               <RichTextPlugin
                 contentEditable={
                   <ContentEditable className="ImageNode__contentEditable" />

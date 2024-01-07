@@ -21,7 +21,8 @@
     "next": "14.0.4",
     "prettier": "^3.1.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "y-websocket": "^1.5.1"
   },
   "devDependencies": {
     "@types/node": "^20",

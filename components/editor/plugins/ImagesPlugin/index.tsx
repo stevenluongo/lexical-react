@@ -29,20 +29,18 @@ import { useEffect, useRef, useState } from "react";
 import * as React from "react";
 import { CAN_USE_DOM } from "@/components/editor/shared/canUseDOM";
 
-import yellowFlowerImage from "@/public/images/yellow-flower.jpg";
+import landscapeImage from "../../images/landscape.jpg";
+import yellowFlowerImage from "../../images/yellow-flower.jpg";
 import {
   $createImageNode,
   $isImageNode,
   ImageNode,
   ImagePayload,
 } from "../../nodes/ImageNode";
-import Button from "@/components/editor/ui/Button";
-import {
-  DialogActions,
-  DialogButtonsList,
-} from "@/components/editor/ui/Dialog";
-import FileInput from "@/components/editor/ui/FileInput";
-import TextInput from "@/components/editor/ui/TextInput";
+import Button from "../../ui/Button";
+import { DialogActions, DialogButtonsList } from "../../ui/Dialog";
+import FileInput from "../../ui/FileInput";
+import TextInput from "../../ui/TextInput";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -172,17 +170,6 @@ export function InsertImageDialog({
     <>
       {!mode && (
         <DialogButtonsList>
-          <Button
-            data-test-id="image-modal-option-sample"
-            onClick={() =>
-              onClick({
-                altText: "Yellow flower in tilt shift lens",
-                src: yellowFlowerImage as unknown as string,
-              })
-            }
-          >
-            Sample
-          </Button>
           <Button
             data-test-id="image-modal-option-url"
             onClick={() => setMode("url")}

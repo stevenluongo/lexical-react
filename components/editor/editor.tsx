@@ -24,56 +24,46 @@ import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { CAN_USE_DOM } from "@/components/editor/shared/canUseDOM";
-
 import { useSettings } from "./context/SettingsContext";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
-import TableCellNodes from "./nodes/TableCellNodes";
-import ActionsPlugin from "@/components/editor/plugins/ActionsPlugin";
-import AutocompletePlugin from "@/components/editor/plugins/AutocompletePlugin";
-import AutoEmbedPlugin from "@/components/editor/plugins/AutoEmbedPlugin";
-import AutoLinkPlugin from "@/components/editor/plugins/AutoLinkPlugin";
-import CodeActionMenuPlugin from "@/components/editor/plugins/CodeActionMenuPlugin";
-import CodeHighlightPlugin from "@/components/editor/plugins/CodeHighlightPlugin";
-import CollapsiblePlugin from "@/components/editor/plugins/CollapsiblePlugin";
-import ComponentPickerPlugin from "@/components/editor/plugins/ComponentPickerPlugin";
-import ContextMenuPlugin from "@/components/editor/plugins/ContextMenuPlugin";
-import DragDropPaste from "@/components/editor/plugins/DragDropPastePlugin";
-import DraggableBlockPlugin from "@/components/editor/plugins/DraggableBlockPlugin";
-import EmojiPickerPlugin from "@/components/editor/plugins/EmojiPickerPlugin";
-import EmojisPlugin from "@/components/editor/plugins/EmojisPlugin";
-
-import FloatingLinkEditorPlugin from "@/components/editor/plugins/FloatingLinkEditorPlugin";
-import FloatingTextFormatToolbarPlugin from "@/components/editor/plugins/FloatingTextFormatToolbarPlugin";
-import ImagesPlugin from "@/components/editor/plugins/ImagesPlugin";
-import InlineImagePlugin from "@/components/editor/plugins/InlineImagePlugin";
-import KeywordsPlugin from "@/components/editor/plugins/KeywordsPlugin";
-import { LayoutPlugin } from "@/components/editor/plugins/LayoutPlugin/LayoutPlugin";
-import LinkPlugin from "@/components/editor/plugins/LinkPlugin";
-import ListMaxIndentLevelPlugin from "@/components/editor/plugins/ListMaxIndentLevelPlugin";
-import MarkdownShortcutPlugin from "@/components/editor/plugins/MarkdownShortcutPlugin";
-import { MaxLengthPlugin } from "@/components/editor/plugins/MaxLengthPlugin";
-import MentionsPlugin from "@/components/editor/plugins/MentionsPlugin";
-import PageBreakPlugin from "@/components/editor/plugins/PageBreakPlugin";
-import PollPlugin from "@/components/editor/plugins/PollPlugin";
-import TabFocusPlugin from "@/components/editor/plugins/TabFocusPlugin";
-import TableCellActionMenuPlugin from "@/components/editor/plugins/TableActionMenuPlugin";
-import TableCellResizer from "@/components/editor/plugins/TableCellResizer";
-import TableOfContentsPlugin from "@/components/editor/plugins/TableOfContentsPlugin";
-import { TablePlugin as NewTablePlugin } from "@/components/editor/plugins/TablePlugin";
-import ToolbarPlugin from "@/components/editor/plugins/ToolbarPlugin";
-import TreeViewPlugin from "@/components/editor/plugins/TreeViewPlugin";
-import TwitterPlugin from "@/components/editor/plugins/TwitterPlugin";
-import YouTubePlugin from "@/components/editor/plugins/YouTubePlugin";
-import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
-import ContentEditable from "@/components/editor/ui/ContentEditable";
-import Placeholder from "@/components/editor/ui/Placeholder";
-import FigmaPlugin from "@/components/editor/plugins/FigmaPlugin";
-import EquationsPlugin from "@/components/editor/plugins/EquationsPlugin";
-import ExcalidrawPlugin from "@/components/editor/plugins/ExcalidrawPlugin";
-
-const skipCollaborationInit =
-  // @ts-ignore
-  window.parent != null && window.parent.frames.right === window;
+import ActionsPlugin from "./plugins/ActionsPlugin";
+import AutocompletePlugin from "./plugins/AutocompletePlugin";
+import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
+import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
+import CodeActionMenuPlugin from "./plugins/CodeActionMenuPlugin";
+import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
+import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
+import ComponentPickerPlugin from "./plugins/ComponentPickerPlugin";
+import ContextMenuPlugin from "./plugins/ContextMenuPlugin";
+import DragDropPaste from "./plugins/DragDropPastePlugin";
+import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
+import EmojiPickerPlugin from "./plugins/EmojiPickerPlugin";
+import EmojisPlugin from "./plugins/EmojisPlugin";
+import EquationsPlugin from "./plugins/EquationsPlugin";
+import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
+import FigmaPlugin from "./plugins/FigmaPlugin";
+import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
+import ImagesPlugin from "./plugins/ImagesPlugin";
+import InlineImagePlugin from "./plugins/InlineImagePlugin";
+import KeywordsPlugin from "./plugins/KeywordsPlugin";
+import { LayoutPlugin } from "./plugins/LayoutPlugin/LayoutPlugin";
+import LinkPlugin from "./plugins/LinkPlugin";
+import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
+import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
+import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
+import MentionsPlugin from "./plugins/MentionsPlugin";
+import PageBreakPlugin from "./plugins/PageBreakPlugin";
+import PollPlugin from "./plugins/PollPlugin";
+import TabFocusPlugin from "./plugins/TabFocusPlugin";
+import TableCellActionMenuPlugin from "./plugins/TableActionMenuPlugin";
+import TableCellResizer from "./plugins/TableCellResizer";
+import TableOfContentsPlugin from "./plugins/TableOfContentsPlugin";
+import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import TreeViewPlugin from "./plugins/TreeViewPlugin";
+import TwitterPlugin from "./plugins/TwitterPlugin";
+import YouTubePlugin from "./plugins/YouTubePlugin";
+import ContentEditable from "./ui/ContentEditable";
+import Placeholder from "./ui/Placeholder";
 
 export default function Editor(): JSX.Element {
   const { historyState } = useSharedHistoryContext();
@@ -93,11 +83,9 @@ export default function Editor(): JSX.Element {
     },
   } = useSettings();
   const isEditable = useLexicalEditable();
-  const text = isCollab
-    ? "Enter some collaborative rich text..."
-    : isRichText
-      ? "Enter some rich text..."
-      : "Enter some plain text...";
+  const text = isRichText
+    ? "Enter some rich text..."
+    : "Enter some plain text...";
   const placeholder = <Placeholder>{text}</Placeholder>;
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
@@ -109,15 +97,6 @@ export default function Editor(): JSX.Element {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
-  };
-
-  const cellEditorConfig = {
-    namespace: "Playground",
-    nodes: [...TableCellNodes],
-    onError: (error: Error) => {
-      throw error;
-    },
-    theme: PlaygroundEditorTheme,
   };
 
   useEffect(() => {
@@ -158,6 +137,7 @@ export default function Editor(): JSX.Element {
         <HashtagPlugin />
         <KeywordsPlugin />
         <AutoLinkPlugin />
+
         {isRichText ? (
           <>
             <HistoryPlugin externalHistoryState={historyState} />
@@ -182,22 +162,6 @@ export default function Editor(): JSX.Element {
               hasCellBackgroundColor={tableCellBackgroundColor}
             />
             <TableCellResizer />
-            <NewTablePlugin cellEditorConfig={cellEditorConfig}>
-              <AutoFocusPlugin />
-              <RichTextPlugin
-                contentEditable={
-                  <ContentEditable className="TableNode__contentEditable" />
-                }
-                placeholder={null}
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <MentionsPlugin />
-              <HistoryPlugin />
-              <ImagesPlugin captionsEnabled={false} />
-              <LinkPlugin />
-              <LexicalClickableLinkPlugin />
-              <FloatingTextFormatToolbarPlugin />
-            </NewTablePlugin>
             <ImagesPlugin />
             <InlineImagePlugin />
             <LinkPlugin />
@@ -226,9 +190,6 @@ export default function Editor(): JSX.Element {
                 <TableCellActionMenuPlugin
                   anchorElem={floatingAnchorElem}
                   cellMerge={true}
-                />
-                <FloatingTextFormatToolbarPlugin
-                  anchorElem={floatingAnchorElem}
                 />
               </>
             )}

@@ -6,28 +6,9 @@
  *
  */
 
-export type SettingName =
-  | "disableBeforeInput"
-  | "measureTypingPerf"
-  | "isRichText"
-  | "isCollab"
-  | "isCharLimit"
-  | "isMaxLength"
-  | "isCharLimitUtf8"
-  | "isAutocomplete"
-  | "shouldUseLexicalContextMenu"
-  | "showTreeView"
-  | "showNestedEditorTreeView"
-  | "emptyEditor"
-  | "showTableOfContents"
-  | "tableCellMerge"
-  | "tableCellBackgroundColor";
+export const isDevPlayground: boolean = false;
 
-export type Settings = Record<SettingName, boolean>;
-
-export const isDevPlayground: boolean = true;
-
-export const DEFAULT_SETTINGS: Settings = {
+export const DEFAULT_SETTINGS = {
   disableBeforeInput: false,
   emptyEditor: isDevPlayground,
   isAutocomplete: false,
@@ -44,3 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tableCellBackgroundColor: true,
   tableCellMerge: true,
 };
+
+export type SettingName = keyof typeof DEFAULT_SETTINGS;
+
+export type Settings = typeof DEFAULT_SETTINGS;

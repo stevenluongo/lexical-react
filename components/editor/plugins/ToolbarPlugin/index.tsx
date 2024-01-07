@@ -51,6 +51,7 @@ import {
   $getNodeByKey,
   $getRoot,
   $getSelection,
+  $INTERNAL_isPointSelection,
   $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
@@ -59,7 +60,6 @@ import {
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   COMMAND_PRIORITY_NORMAL,
-  DEPRECATED_$isGridSelection,
   ElementFormatType,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
@@ -77,8 +77,8 @@ import * as React from "react";
 import { IS_APPLE } from "@/components/editor/shared/environment";
 
 import useModal from "../../hooks/useModal";
-import catTypingGif from "@/public/images/cat-typing.gif";
-import { $createStickyNode } from "@/components/editor/nodes/StickyNode";
+import catTypingGif from "../../images/cat-typing.gif";
+import { $createStickyNode } from "../../nodes/StickyNode";
 import DropDown, { DropDownItem } from "../../ui/DropDown";
 import DropdownColorPicker from "../../ui/DropdownColorPicker";
 import { getSelectedNode } from "../../utils/getSelectedNode";
@@ -96,7 +96,7 @@ import { InsertInlineImageDialog } from "../InlineImagePlugin";
 import InsertLayoutDialog from "../LayoutPlugin/InsertLayoutDialog";
 import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
 import { InsertPollDialog } from "../PollPlugin";
-import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
+import { InsertTableDialog } from "../TablePlugin";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -164,7 +164,7 @@ const ELEMENT_FORMAT_OPTIONS: {
 } = {
   center: {
     icon: "center-align",
-    iconRTL: "right-align",
+    iconRTL: "center-align",
     name: "Center Align",
   },
   end: {
@@ -213,10 +213,7 @@ function BlockFormatDropDown({
   const formatParagraph = () => {
     editor.update(() => {
       const selection = $getSelection();
-      if (
-        $isRangeSelection(selection) ||
-        DEPRECATED_$isGridSelection(selection)
-      ) {
+      if ($INTERNAL_isPointSelection(selection)) {
         $setBlocksType(selection, () => $createParagraphNode());
       }
     });
@@ -226,10 +223,7 @@ function BlockFormatDropDown({
     if (blockType !== headingSize) {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($INTERNAL_isPointSelection(selection)) {
           $setBlocksType(selection, () => $createHeadingNode(headingSize));
         }
       });
@@ -264,10 +258,7 @@ function BlockFormatDropDown({
     if (blockType !== "quote") {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($INTERNAL_isPointSelection(selection)) {
           $setBlocksType(selection, () => $createQuoteNode());
         }
       });
@@ -279,10 +270,7 @@ function BlockFormatDropDown({
       editor.update(() => {
         let selection = $getSelection();
 
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($INTERNAL_isPointSelection(selection)) {
           if (selection.isCollapsed()) {
             $setBlocksType(selection, () => $createCodeNode());
           } else {
@@ -392,10 +380,7 @@ function FontDropDown({
     (option: string) => {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($INTERNAL_isPointSelection(selection)) {
           $patchStyleText(selection, {
             [style]: option,
           });
@@ -673,10 +658,22 @@ export default function ToolbarPlugin({
       setFontFamily(
         $getSelectionStyleValueForProperty(selection, "font-family", "Arial")
       );
+      let matchingParent;
+      if ($isLinkNode(parent)) {
+        // If node is a link, we need to fetch the parent paragraph node to set format
+        matchingParent = $findMatchingParent(
+          node,
+          (parentNode) => $isElementNode(parentNode) && !parentNode.isInline()
+        );
+      }
+
+      // If matchingParent is a valid node, pass it's format type
       setElementFormat(
-        ($isElementNode(node)
-          ? node.getFormatType()
-          : parent?.getFormatType()) || "left"
+        $isElementNode(matchingParent)
+          ? matchingParent.getFormatType()
+          : $isElementNode(node)
+            ? node.getFormatType()
+            : parent?.getFormatType() || "left"
       );
     }
   }, [activeEditor]);
@@ -751,10 +748,7 @@ export default function ToolbarPlugin({
     (styles: Record<string, string>) => {
       activeEditor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($INTERNAL_isPointSelection(selection)) {
           $patchStyleText(selection, styles);
         }
       });
@@ -1132,18 +1126,6 @@ export default function ToolbarPlugin({
               <span className="text">Inline Image</span>
             </DropDownItem>
             <DropDownItem
-              onClick={() =>
-                insertGifOnClick({
-                  altText: "Cat typing on a laptop",
-                  src: catTypingGif as unknown as string,
-                })
-              }
-              className="item"
-            >
-              <i className="icon gif" />
-              <span className="text">GIF</span>
-            </DropDownItem>
-            <DropDownItem
               onClick={() => {
                 activeEditor.dispatchCommand(
                   INSERT_EXCALIDRAW_COMMAND,
@@ -1168,20 +1150,6 @@ export default function ToolbarPlugin({
             >
               <i className="icon table" />
               <span className="text">Table</span>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => {
-                showModal("Insert Table", (onClose) => (
-                  <InsertNewTableDialog
-                    activeEditor={activeEditor}
-                    onClose={onClose}
-                  />
-                ));
-              }}
-              className="item"
-            >
-              <i className="icon table" />
-              <span className="text">Table (Experimental)</span>
             </DropDownItem>
             <DropDownItem
               onClick={() => {
