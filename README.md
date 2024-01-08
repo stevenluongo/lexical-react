@@ -4,6 +4,5 @@ This repo is not synced with the lexical playground package repo.
 
 Works with next.js 14, with SSR. 
 
-Link lexical-react.vercel.app
-
+Link https://lexical-react.vercel.app/
 
