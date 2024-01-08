@@ -6,14 +6,14 @@
  *
  */
 
-import './Collapsible.css';
+import "./Collapsible.css";
 
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $findMatchingParent,
   $insertNodeToNearestRoot,
   mergeRegister,
-} from '@lexical/utils';
+} from "@lexical/utils";
 import {
   $createParagraphNode,
   $getPreviousSelection,
@@ -32,24 +32,24 @@ import {
   KEY_ARROW_UP_COMMAND,
   LexicalNode,
   NodeKey,
-} from 'lexical';
-import {useEffect} from 'react';
+} from "lexical";
+import { useEffect } from "react";
 
 import {
   $createCollapsibleContainerNode,
   $isCollapsibleContainerNode,
   CollapsibleContainerNode,
-} from './CollapsibleContainerNode';
+} from "./CollapsibleContainerNode";
 import {
   $createCollapsibleContentNode,
   $isCollapsibleContentNode,
   CollapsibleContentNode,
-} from './CollapsibleContentNode';
+} from "./CollapsibleContentNode";
 import {
   $createCollapsibleTitleNode,
   $isCollapsibleTitleNode,
   CollapsibleTitleNode,
-} from './CollapsibleTitleNode';
+} from "./CollapsibleTitleNode";
 
 export const INSERT_COLLAPSIBLE_COMMAND = createCommand<void>();
 export const TOGGLE_COLLAPSIBLE_COMMAND = createCommand<NodeKey>();
@@ -66,7 +66,7 @@ export default function CollapsiblePlugin(): null {
       ])
     ) {
       throw new Error(
-        'CollapsiblePlugin: CollapsibleContainerNode, CollapsibleTitleNode, or CollapsibleContentNode not registered on editor',
+        "CollapsiblePlugin: CollapsibleContainerNode, CollapsibleTitleNode, or CollapsibleContentNode not registered on editor"
       );
     }
 
@@ -79,7 +79,7 @@ export default function CollapsiblePlugin(): null {
       ) {
         const container = $findMatchingParent(
           selection.anchor.getNode(),
-          $isCollapsibleContainerNode,
+          $isCollapsibleContainerNode
         );
 
         if ($isCollapsibleContainerNode(container)) {
@@ -103,7 +103,7 @@ export default function CollapsiblePlugin(): null {
       if ($isRangeSelection(selection) && selection.isCollapsed()) {
         const container = $findMatchingParent(
           selection.anchor.getNode(),
-          $isCollapsibleContainerNode,
+          $isCollapsibleContainerNode
         );
 
         if ($isCollapsibleContainerNode(container)) {
@@ -146,7 +146,7 @@ export default function CollapsiblePlugin(): null {
         const parent = node.getParent<ElementNode>();
         if (!$isCollapsibleContainerNode(parent)) {
           node.replace(
-            $createParagraphNode().append(...node.getChildren<LexicalNode>()),
+            $createParagraphNode().append(...node.getChildren<LexicalNode>())
           );
           return;
         }
@@ -187,7 +187,7 @@ export default function CollapsiblePlugin(): null {
           if (topLevelElement === null) {
             return false;
           }
-
+          // @ts-ignore
           const container = topLevelElement.getPreviousSibling<LexicalNode>();
           if (!$isCollapsibleContainerNode(container) || container.getOpen()) {
             return false;
@@ -196,7 +196,7 @@ export default function CollapsiblePlugin(): null {
           container.setOpen(true);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
 
       // When collapsible is the last child pressing down/right arrow will insert paragraph
@@ -206,13 +206,13 @@ export default function CollapsiblePlugin(): null {
       editor.registerCommand(
         KEY_ARROW_DOWN_COMMAND,
         onEscapeDown,
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
 
       editor.registerCommand(
         KEY_ARROW_RIGHT_COMMAND,
         onEscapeDown,
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
 
       // When collapsible is the first child pressing up/left arrow will insert paragraph
@@ -222,13 +222,13 @@ export default function CollapsiblePlugin(): null {
       editor.registerCommand(
         KEY_ARROW_UP_COMMAND,
         onEscapeUp,
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
 
       editor.registerCommand(
         KEY_ARROW_LEFT_COMMAND,
         onEscapeUp,
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
 
       // Handling CMD+Enter to toggle collapsible element collapsed state
@@ -241,13 +241,13 @@ export default function CollapsiblePlugin(): null {
           if (
             windowEvent &&
             (windowEvent.ctrlKey || windowEvent.metaKey) &&
-            windowEvent.key === 'Enter'
+            windowEvent.key === "Enter"
           ) {
             const selection = $getPreviousSelection();
             if ($isRangeSelection(selection) && selection.isCollapsed()) {
               const parent = $findMatchingParent(
                 selection.anchor.getNode(),
-                (node) => $isElementNode(node) && !node.isInline(),
+                (node) => $isElementNode(node) && !node.isInline()
               );
 
               if ($isCollapsibleTitleNode(parent)) {
@@ -263,7 +263,7 @@ export default function CollapsiblePlugin(): null {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         INSERT_COLLAPSIBLE_COMMAND,
@@ -273,15 +273,15 @@ export default function CollapsiblePlugin(): null {
             $insertNodeToNearestRoot(
               $createCollapsibleContainerNode(true).append(
                 title,
-                $createCollapsibleContentNode().append($createParagraphNode()),
-              ),
+                $createCollapsibleContentNode().append($createParagraphNode())
+              )
             );
             title.select();
           });
           return true;
         },
-        COMMAND_PRIORITY_LOW,
-      ),
+        COMMAND_PRIORITY_LOW
+      )
     );
   }, [editor]);
 
