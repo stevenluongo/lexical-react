@@ -1,6 +1,12 @@
 import dynamic from "next/dynamic";
-const Home = dynamic(() => import("./_app"), { ssr: false });
+import { Logo } from "./logo";
+const LexicalEditor = dynamic(() => import("./app"), { ssr: false });
 
 export default function Page() {
-  return <Home />;
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <LexicalEditor />
+      <Logo />
+    </main>
+  );
 }
